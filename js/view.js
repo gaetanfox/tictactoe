@@ -47,6 +47,28 @@ export default class View {
         icon.classList.toggle('fa-chevron-up');
     }
 
+    handlePlayerMove(squareEl, player) {
+        const icon = document.createElement('i');
+        icon.classList.add("fa-solid",
+            player === 1 ? "fa-x" : "fa-o",
+            player === 1 ? "yellow" : "turquoise",
+        );
+        squareEl.replaceChildren(icon);
+    }
+
+    // player = 1 | 2
+    setTurnIndicator(player) {
+        const icon = document.createElement('i');
+        const label = document.createElement('p');
+        this.$.turn.classList.add(player === 1 ? 'yellow' : 'turquoise');
+        this.$.turn.classList.remove(player === 1 ? 'turquoise' : 'yellow');
+
+        icon.classList.add('fa-solid', player === 1 ? 'fa-x' : 'fa-o');
+        label.innerText = player === 1 ? 'Player 1 you are up!' : 'Player 2 you are up!';
+
+        this.$.turn.replaceChildren(icon, label);
+    }
+
     #qs(selector, parent) {
         const el = parent ? parent.querySelector(selector) : document.querySelector(selector);
         if(!el) throw new Error('Could not find elements');
