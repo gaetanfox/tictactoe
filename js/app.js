@@ -1,3 +1,5 @@
+import View from './view.js';
+
 const App = {
     // All of our selected elements
     $: {
@@ -12,8 +14,12 @@ const App = {
         turn: document.querySelector('[data-id="turn"]'),
     },
     getGameStatus(moves) {
-        const p1Moves = moves.filter((move) => move.playerId === 1).map((move) => +move.squareId);
-        const p2Moves = moves.filter((move) => move.playerId === 2).map((move) => +move.squareId);
+        const p1Moves = moves
+            .filter((move) => move.playerId === 1)
+            .map((move) => +move.squareId);
+        const p2Moves = moves
+            .filter((move) => move.playerId === 2)
+            .map((move) => +move.squareId);
         const winningPatterns = [
             [ 1, 2, 3 ],
             [ 1, 5, 9 ],
@@ -26,17 +32,18 @@ const App = {
         ];
 
         let winner = null;
-        winningPatterns.forEach(pattern => {
-            const p1Wins = pattern.every(v => p1Moves.includes(v));
-            const p2Wins = pattern.every(v => p2Moves.includes(v));
+        winningPatterns.forEach((pattern) => {
+            const p1Wins = pattern.every((v) => p1Moves.includes(v));
+            const p2Wins = pattern.every((v) => p2Moves.includes(v));
 
             if(p1Wins) winner = 1;
             if(p2Wins) winner = 2;
         });
 
         return {
-            status: moves.length === 9 || winner !== null ? 'complete' : 'in-progress',//in-progress | complete
-            winner // 1 | 2 | null
+            status:
+                moves.length === 9 || winner !== null ? "complete" : "in-progress", //in-progress | complete
+            winner, // 1 | 2 | null
         };
     },
     init() {
@@ -49,52 +56,60 @@ const App = {
     // The event listeners go there
     registerEventListeners() {
         // Add events listeners here
-        App.$.menu.addEventListener('click', event => {
-            App.$.menuItem.classList.toggle('hidden');
+        App.$.menu.addEventListener("click", (event) => {
+            App.$.menuItem.classList.toggle("hidden");
         });
         // TODO
-        App.$.resetBtn.addEventListener('click', event => { console.log('reset the game'); });
+        App.$.resetBtn.addEventListener("click", (event) => {
+            console.log("reset the game");
+        });
         // TODO
-        App.$.newRoundBtn.addEventListener('click', event => { console.log('New round'); });
+        App.$.newRoundBtn.addEventListener("click", (event) => {
+            console.log("New round");
+        });
 
-
-        App.$.gameBoardSquare.forEach(square => {
-            square.addEventListener('click', event => {
+        App.$.gameBoardSquare.forEach((square) => {
+            square.addEventListener("click", (event) => {
                 // check if there is aleady a play, if so, return early
                 const hasMove = (squareId) => {
-                    const existingMove = App.state.moves.find(move => move.squareId === squareId);
+                    const existingMove = App.state.moves.find(
+                        (move) => move.squareId === squareId,
+                    );
                     return existingMove !== undefined;
                 };
                 if(hasMove(+square.id)) return;
 
                 // Who is the last one who played so we can switch it
                 const lastMove = App.state.moves.at(-1);
-                const getOppositePlayer = (playerId) => playerId === 1 ? 2 : 1;
-                const currentPlayer = App.state.moves.length === 0 ? 1 : getOppositePlayer(lastMove.playerId);
+                const getOppositePlayer = (playerId) => (playerId === 1 ? 2 : 1);
+                const currentPlayer =
+                    App.state.moves.length === 0
+                        ? 1
+                        : getOppositePlayer(lastMove.playerId);
                 const nextPlayer = getOppositePlayer(currentPlayer);
 
                 // Determine which player icon to add to the square
                 // Also updating the turn label on the top left to match the current player turn
-                const squareIcon = document.createElement('i');
-                const turnIcon = document.createElement('i');
-                const turnLabel = document.createElement('p');
+                const squareIcon = document.createElement("i");
+                const turnIcon = document.createElement("i");
+                const turnLabel = document.createElement("p");
                 if(currentPlayer === 1) {
-                    squareIcon.classList.add('fa-solid', 'fa-x', 'yellow');
-                    turnIcon.classList.add('fa-solid', 'fa-o', 'turquoise');
+                    squareIcon.classList.add("fa-solid", "fa-x", "yellow");
+                    turnIcon.classList.add("fa-solid", "fa-o", "turquoise");
                     turnLabel.innerText = `Player ${ nextPlayer }, you are up!`;
-                    turnLabel.classList = 'turquoise';
+                    turnLabel.classList = "turquoise";
                 } else {
-                    squareIcon.classList.add('fa-solid', 'fa-o', 'turquoise');
-                    turnIcon.classList.add('fa-solid', 'fa-x', 'yellow');
+                    squareIcon.classList.add("fa-solid", "fa-o", "turquoise");
+                    turnIcon.classList.add("fa-solid", "fa-x", "yellow");
                     turnLabel.innerText = `Player ${ nextPlayer }, you are up!`;
-                    turnLabel.classList = 'yellow';
+                    turnLabel.classList = "yellow";
                 }
                 App.$.turn.replaceChildren(turnIcon, turnLabel);
 
                 // Update the state of the App
                 App.state.moves.push({
                     squareId: +square.id,
-                    playerId: currentPlayer
+                    playerId: currentPlayer,
                 });
                 App.state.currentPlayer = currentPlayer === 1 ? 2 : 1;
 
@@ -105,26 +120,29 @@ const App = {
                 const game = App.getGameStatus(App.state.moves);
                 console.log(game);
 
-                if(game.status == 'complete') {
-                    App.$.modal.classList.remove('hidden');
-                    let message = '';
+                if(game.status == "complete") {
+                    App.$.modal.classList.remove("hidden");
+                    let message = "";
                     if(game.winner) {
                         message = `Player ${ game.winner } wins!`;
                     } else {
-                        message = 'Tie game';
+                        message = "Tie game";
                     }
                     App.$.modalText.textContent = message;
                 }
-
             });
         });
-        App.$.modalButton.addEventListener('click', event => {
+        App.$.modalButton.addEventListener("click", (event) => {
             App.state.moves = [];
-            App.$.gameBoardSquare.forEach(square => square.replaceChildren());
-            App.$.modal.classList.add('hidden');
+            App.$.gameBoardSquare.forEach((square) => square.replaceChildren());
+            App.$.modal.classList.add("hidden");
         });
-        console.log(App.$.modalButton);
-    }
+    },
 };
 
-window.addEventListener('load', App.init);
+// window.addEventListener("load", App.init);
+function init() {
+    const view = new View();
+    console.log(view.$.turn);
+}
+window.addEventListener("load", init);
