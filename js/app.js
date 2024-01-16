@@ -1,18 +1,6 @@
 import View from './view.js';
 
 const App = {
-    // All of our selected elements
-    $: {
-        menu: document.querySelector('[data-id="menu"]'),
-        menuItem: document.querySelector('[data-id="menu-items"]'),
-        resetBtn: document.querySelector('[data-id="reset-btn"]'),
-        newRoundBtn: document.querySelector('[data-id="new-round-btn"]'),
-        gameBoardSquare: document.querySelectorAll('[data-id="square"]'),
-        modal: document.querySelector('[data-id="modal"]'),
-        modalText: document.querySelector('[data-id="modal-text"]'),
-        modalButton: document.querySelector('[data-id="modal-btn"]'),
-        turn: document.querySelector('[data-id="turn"]'),
-    },
     getGameStatus(moves) {
         const p1Moves = moves
             .filter((move) => move.playerId === 1)
@@ -55,17 +43,10 @@ const App = {
 
     // The event listeners go there
     registerEventListeners() {
-        // Add events listeners here
-        App.$.menu.addEventListener("click", (event) => {
-            App.$.menuItem.classList.toggle("hidden");
-        });
-        // TODO
-        App.$.resetBtn.addEventListener("click", (event) => {
-            console.log("reset the game");
-        });
-        // TODO
-        App.$.newRoundBtn.addEventListener("click", (event) => {
-            console.log("New round");
+        App.$.modalButton.addEventListener("click", (event) => {
+            App.state.moves = [];
+            App.$.gameBoardSquare.forEach((square) => square.replaceChildren());
+            App.$.modal.classList.add("hidden");
         });
 
         App.$.gameBoardSquare.forEach((square) => {
@@ -132,17 +113,25 @@ const App = {
                 }
             });
         });
-        App.$.modalButton.addEventListener("click", (event) => {
-            App.state.moves = [];
-            App.$.gameBoardSquare.forEach((square) => square.replaceChildren());
-            App.$.modal.classList.add("hidden");
-        });
+
     },
 };
 
-// window.addEventListener("load", App.init);
+
 function init() {
     const view = new View();
+    view.bindGameResetEvent(event => {
+        console.log('Reset Event');
+        console.log(event);
+    });
+    view.bindNewRoundEvent(event => {
+        console.log('new round Event');
+        console.log(event);
+    });
+    view.bindPlayerMoveEvent(event => {
+        console.log('Player move Event');
+        console.log(event);
+    });
     console.log(view.$.turn);
 }
 window.addEventListener("load", init);
